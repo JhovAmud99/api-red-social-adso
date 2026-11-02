@@ -134,3 +134,4 @@ git push
 - Las consultas SQL utilizan parámetros para reducir el riesgo de inyección SQL.
 - Este proyecto es una base académica funcional. Antes de producción se recomienda agregar límites de solicitudes, validación avanzada, políticas de privacidad y pruebas automatizadas.
 - La tabla y los campos de `database.sql` deben coincidir con la base de datos utilizada en MySQL Workbench.
+# api-red-social-adso
