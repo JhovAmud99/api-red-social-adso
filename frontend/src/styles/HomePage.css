@@ -1,0 +1,116 @@
+
+.home-container {
+    min-height: 100vh;
+    background: #D3EADA;
+}
+
+.home-header {
+    background: #39734F;
+    color: white;
+    padding: 18px 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.home-header h1 {
+    margin: 0;
+}
+
+.home-header div {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.home-header button {
+    padding: 10px 15px;
+    background: white;
+    color: #39734F;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.home-content {
+    width: 90%;
+    max-width: 750px;
+    margin: 30px auto;
+}
+
+.publication-form,
+.publication-card {
+    background: white;
+    padding: 22px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+}
+
+.publication-form textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 13px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    resize: vertical;
+    font-family: Arial, sans-serif;
+    font-size: 15px;
+}
+
+.publication-form button {
+    margin-top: 12px;
+    padding: 12px 25px;
+    background: #39734F;
+    color: white;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+.publication-card h3 {
+    color: #39734F;
+    margin-top: 0;
+}
+
+.publication-card p {
+    color: #333;
+    line-height: 1.6;
+    white-space: pre-wrap;
+}
+
+.home-message {
+    color: #28583B;
+    font-weight: bold;
+}
+
+/* Mejorar la visibilidad de los textos */
+.home-content h2,
+.home-content > p {
+    color: #28583B;
+}
+
+/* Mejorar el formulario de publicaciones */
+.publication-form h3 {
+    color: #39734F;
+}
+
+.publication-form textarea {
+    background: #FFFFFF;
+    color: #333333;
+    border: 1px solid #B8CDBE;
+}
+
+.publication-form textarea::placeholder {
+    color: #777777;
+}
+
+.publication-list h2 {
+    color: #39734F;
+}
+
+.home-message {
+    text-align: center;
+}

@@ -1,71 +1,35 @@
-CREATE DATABASE IF NOT EXISTS red_social_adso
-  CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE red_social_adso;
 
-CREATE TABLE usuarios (
-  id_usuario INT AUTO_INCREMENT PRIMARY KEY,
-  nombres VARCHAR(80) NOT NULL,
-  apellidos VARCHAR(80) NOT NULL,
-  correo VARCHAR(150) NOT NULL UNIQUE,
-  password_hash VARCHAR(255) NOT NULL,
-  fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+-- RED SOCIAL ADSO
+-- Script de instalación de la base de datos
+-- Módulos: autenticación y publicaciones
 
-CREATE TABLE publicaciones (
-  id_publicacion INT AUTO_INCREMENT PRIMARY KEY,
-  id_usuario INT NOT NULL,
-  contenido TEXT NOT NULL,
-  fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario) ON DELETE CASCADE
-);
+CREATE DATABASE IF NOT EXISTS red_social
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_general_ci;
 
-CREATE TABLE comentarios (
-  id_comentario INT AUTO_INCREMENT PRIMARY KEY,
-  id_publicacion INT NOT NULL,
-  id_usuario INT NOT NULL,
-  contenido TEXT NOT NULL,
-  fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (id_publicacion) REFERENCES publicaciones(id_publicacion) ON DELETE CASCADE,
-  FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario) ON DELETE CASCADE
-);
+USE red_social;
 
-CREATE TABLE reacciones (
-  id_reaccion INT AUTO_INCREMENT PRIMARY KEY,
-  id_publicacion INT NOT NULL,
-  id_usuario INT NOT NULL,
-  tipo VARCHAR(30) NOT NULL DEFAULT 'me_gusta',
-  fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  UNIQUE KEY uq_reaccion_usuario_publicacion (id_publicacion, id_usuario),
-  FOREIGN KEY (id_publicacion) REFERENCES publicaciones(id_publicacion) ON DELETE CASCADE,
-  FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario) ON DELETE CASCADE
-);
+-- USUARIOS
+CREATE TABLE IF NOT EXISTS usuario (
+    id_usuario INT NOT NULL AUTO_INCREMENT,
+    nombres VARCHAR(100) NOT NULL,
+    apellidos VARCHAR(100) NOT NULL,
+    correo VARCHAR(100) NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
 
-CREATE TABLE amistades (
-  id_amistad INT AUTO_INCREMENT PRIMARY KEY,
-  id_usuario_origen INT NOT NULL,
-  id_usuario_destino INT NOT NULL,
-  estado ENUM('pendiente','aceptada','rechazada') DEFAULT 'pendiente',
-  fecha_solicitud TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (id_usuario_origen) REFERENCES usuarios(id_usuario) ON DELETE CASCADE,
-  FOREIGN KEY (id_usuario_destino) REFERENCES usuarios(id_usuario) ON DELETE CASCADE
-);
+    PRIMARY KEY (id_usuario),
+    CONSTRAINT uq_usuario_correo UNIQUE (correo)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE mensajes (
-  id_mensaje INT AUTO_INCREMENT PRIMARY KEY,
-  id_usuario_origen INT NOT NULL,
-  id_usuario_destino INT NOT NULL,
-  contenido TEXT NOT NULL,
-  fecha_envio TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (id_usuario_origen) REFERENCES usuarios(id_usuario) ON DELETE CASCADE,
-  FOREIGN KEY (id_usuario_destino) REFERENCES usuarios(id_usuario) ON DELETE CASCADE
-);
+-- PUBLICACIONES
+CREATE TABLE IF NOT EXISTS publicacion (
+    id_publicacion INT NOT NULL AUTO_INCREMENT,
+    contenido TEXT DEFAULT NULL,
+    id_usuario INT NOT NULL,
 
-CREATE TABLE notificaciones (
-  id_notificacion INT AUTO_INCREMENT PRIMARY KEY,
-  id_usuario INT NOT NULL,
-  tipo VARCHAR(50) NOT NULL,
-  descripcion VARCHAR(255) NOT NULL,
-  leida BOOLEAN DEFAULT FALSE,
-  fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario) ON DELETE CASCADE
-);
+    PRIMARY KEY (id_publicacion),
+
+    CONSTRAINT fk_publicacion_usuario
+    FOREIGN KEY (id_usuario)
+    REFERENCES usuario(id_usuario)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

@@ -1,0 +1,398 @@
+{
+  "info": {
+    "name": "Red Social ADSO - Pruebas de API",
+    "description": "Colección para registro, login y CRUD de publicaciones. Ejecutar en orden. La respuesta POST publicaciones puede no incluir el ID: la solicitud 05 lo recupera por contenido. Usar credenciales de prueba y una base de datos local.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "01 - Registrar usuario",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/registro",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "registro"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombres\": \"Usuario\",\n  \"apellidos\": \"Prueba ADSO\",\n  \"correo\": \"{{correoPrueba}}\",\n  \"password\": \"{{passwordPrueba}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Registro: 201\", () => pm.response.to.have.status(201));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 - Iniciar sesión y guardar token",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "login"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"correo\": \"{{correoPrueba}}\",\n  \"password\": \"{{passwordPrueba}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Login: 200\", () => pm.response.to.have.status(200));",
+              "if (pm.response.code === 200) { const j=pm.response.json(); if (j.token) pm.environment.set(\"token\",j.token); }",
+              "if (pm.response.code === 200) { const j=pm.response.json(); if (j.usuario && j.usuario.id_usuario) pm.environment.set(\"idUsuarioPrueba\", String(j.usuario.id_usuario)); }"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 - Consultar publicaciones",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/publicaciones",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "publicaciones"
+          ]
+        },
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Consulta: 200\", () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 - Crear publicación y guardar ID",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/publicaciones",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "publicaciones"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"contenido\": \"Publicación de prueba automatizada ADSO\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.environment.unset(\"idPublicacion\");"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Creación: 201\", () => pm.response.to.have.status(201));",
+              "if (pm.response.code === 201) { const j=pm.response.json(); const id=j.id_publicacion ?? j.id ?? j.insertId; if (id) pm.environment.set(\"idPublicacion\",String(id)); }"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 - Consultar publicaciones para identificar ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/publicaciones",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "publicaciones"
+          ]
+        },
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Consulta: 200\", () => pm.response.to.have.status(200));",
+              "if (pm.response.code === 200) {",
+              " const arr=pm.response.json(); const uid=pm.environment.get(\"idUsuarioPrueba\");",
+              " if (Array.isArray(arr)) {",
+              "  const p=arr.find(x => x.contenido === \"Publicación de prueba automatizada ADSO\" && String(x.id_usuario) === String(uid));",
+              "  if (p) pm.environment.set(\"idPublicacion\",String(p.id_publicacion));",
+              " }",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 - Actualizar publicación de prueba",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/publicaciones/{{idPublicacion}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "publicaciones",
+            "{{idPublicacion}}"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"contenido\": \"Publicación actualizada mediante PUT - ADSO\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const id = pm.environment.get(\"idPublicacion\");",
+              "const token = pm.environment.get(\"token\");",
+              "if (!id || !/^\\d+$/.test(String(id))) { throw new Error(\"Falta idPublicacion válido; ejecutar antes creación y consulta.\"); }",
+              "if (!token) { throw new Error(\"Falta token; ejecutar inicio de sesión.\"); }"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Actualización: 200\", () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 - Eliminar publicación de prueba",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/publicaciones/{{idPublicacion}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "publicaciones",
+            "{{idPublicacion}}"
+          ]
+        },
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const id = pm.environment.get(\"idPublicacion\");",
+              "const token = pm.environment.get(\"token\");",
+              "if (!id || !/^\\d+$/.test(String(id))) { throw new Error(\"Falta idPublicacion válido; ejecutar antes creación y consulta.\"); }",
+              "if (!token) { throw new Error(\"Falta token; ejecutar inicio de sesión.\"); }"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Eliminación exitosa\", () => pm.expect(pm.response.code).to.be.oneOf([200,204]));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "08 - Confirmar eliminación",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/publicaciones",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "publicaciones"
+          ]
+        },
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Consulta posterior: 200\", () => pm.response.to.have.status(200));",
+              "if (pm.response.code === 200 && pm.environment.get(\"idPublicacion\")) { const arr=pm.response.json(); pm.test(\"ID eliminado no aparece\", () => pm.expect(arr.some(x=>String(x.id_publicacion)===pm.environment.get(\"idPublicacion\"))).to.eql(false)); }"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "variable": []
+}

@@ -62,4 +62,4 @@ La API utiliza JSON Web Token (JWT) para proteger las rutas que requieren autent
 
 ### 4. Estado de implementación
 
-Los servicios de registro, inicio de sesión y gestión de publicaciones fueron implementados y probados mediante Postman.
+Los servicios de registro, inicio de sesión y gestión de publicaciones fueron implementados y probados mediante Postman.   
