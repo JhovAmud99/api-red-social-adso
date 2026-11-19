@@ -23,9 +23,9 @@ const PORT = process.env.PORT || 3000;
   try {
     await db.query("SELECT 1");
     console.log("Conexión con MySQL establecida.");
-    app.listen(PORT, () => console.log(`Servidor disponible en http://localhost:${PORT}`));
+    app.listen(PORT, "0.0.0.0", () => {console.log(`Servidor disponible en el puerto ${PORT}`);});
   } catch (error) {
     console.error("No se pudo conectar con MySQL:", error.message);
     process.exit(1);
-  }
+  } 
 })();
